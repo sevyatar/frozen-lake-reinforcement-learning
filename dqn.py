@@ -9,13 +9,13 @@ from keras.layers import Dense
 from keras.optimizers import Adam
 
 DISCOUNT = 0.99
-EPISODES = 10000
+EPISODES = 2000
 SHOW_EVERY = 100
 RESTART_DECAY_EVERY = 1000
 
 REPLAY_MEMORY_SIZE = 50_000  # How many last steps to keep for model training
 MIN_REPLAY_MEMORY_SIZE = 1_000  # Minimum number of steps in a memory to start training
-MINIBATCH_SIZE = 64  # How many steps (samples) to use for training
+MINIBATCH_SIZE = 16  # How many steps (samples) to use for training
 UPDATE_TARGET_EVERY = 5  # Terminal states (end of episodes)
 
 # Exploration settings
@@ -29,7 +29,7 @@ EPSILON_DECAY_FACTOR = (MIN_EPSILON / INITIAL_EPSILON) ** (1 / EPISODE_TO_END_DE
 
 class FrozenLakeDQNAgent(object):
     def __init__(self):
-        random_map = generate_random_map(size=8, p=0.8)
+        random_map = generate_random_map(size=6, p=0.8)
         self.env = gym.make("FrozenLake-v0", is_slippery=True, desc=random_map)
         self.env.reset()
 
@@ -54,7 +54,7 @@ class FrozenLakeDQNAgent(object):
     def _create_model(self):
         model = Sequential()
         model.add(Dense(self.state_space, input_dim=self.state_space, activation='relu'))
-        model.add(Dense(24, activation='relu'))
+        model.add(Dense(self.state_space, activation='relu'))
         model.add(Dense(self.action_space, activation='linear'))
         model.compile(loss='mse', optimizer=Adam(lr=0.001), metrics=['accuracy'])
 
